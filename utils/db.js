@@ -1,7 +1,9 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize("postgres://default:gG6RdhBjcl5M@ep-round-sea-185823-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb", {
-  dialect: 'postgres',
+const sequelize = new Sequelize('businessdb', 'cholah', 'Cholah@2104', {
+  host: 'db4free.net ',
+  port: '3306',
+  dialect: 'mysql',
   dialectOptions: {
     ssl: {
       require: true,
