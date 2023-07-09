@@ -81,7 +81,7 @@ router.put('/transactions/:id', async (req, res) => {
         accountname: userDetails.accountname,
         accounttype: userDetails.accounttype,
         accountno: userDetails.accountno,
-        amountpaid,
+        amountpaid: amountToPay !== "" ? parseFloat(amountToPay) : null,
         description,
         incomegroupcode
       });
