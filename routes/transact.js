@@ -28,7 +28,7 @@ router.put('/transactions/:id', async (req, res) => {
       return res.status(404).json({ error: 'User details not found' });
     }
 
-    // Update the transaction data
+    // transaction data
     transaction.receiptno = receiptno;
     transaction.transaction_date = transaction_date;
     transaction.accountname = userDetails.accountname;
@@ -36,7 +36,7 @@ router.put('/transactions/:id', async (req, res) => {
     transaction.accountno = userDetails.accountno;
     transaction.amountpaid = amountpaid;
     transaction.description = description;
-    transaction.incomegroupcode = incomegroupcode;  // Assign the provided incomegroupcode
+    transaction.incomegroupcode = incomegroupcode;
 
     await transaction.save();
 
