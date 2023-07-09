@@ -30,7 +30,7 @@ const Transaction = db.define("Transaction", {
   },
   amountpaid: {
     type: Sequelize.DECIMAL(10, 2),
-    allowNull: true,
+    allowNull: false,
   },
   description: {
     type: Sequelize.STRING,

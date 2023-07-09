@@ -11,7 +11,7 @@ router.put('/transactions/:id', async (req, res) => {
     userDetailsId,
     amountpaid,
     description,
-    incomegroupcode  // Add incomegroupcode to the destructured assignment
+    incomegroupcode
   } = req.body;
 
   try {
