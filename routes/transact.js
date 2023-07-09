@@ -4,57 +4,51 @@ const express = require('express');
 const router = express.Router();
 
 router.put('/transactions/:id', async (req, res) => {
-    const { id } = req.params;
-    const {
-      receiptno,
-      transaction_date,
-      userDetailsId,
-      amountpaid,
-      description
-    } = req.body;
+  const { id } = req.params;
+  const {
+    receiptno,
+    transaction_date,
+    userDetailsId,
+    amountpaid,
+    description,
+    incomegroupcode  // Add incomegroupcode to the destructured assignment
+  } = req.body;
 
-    try {
-      const transaction = await Transaction.findByPk(id);
+  try {
+    const transaction = await Transaction.findByPk(id);
 
-      if (!transaction) {
-        return res.status(404).json({ error: 'Transaction not found' });
-      }
-
-      // Fetch the user details from the UserDetails table
-      const userDetails = await UserDetails.findByPk(userDetailsId);
-
-      if (!userDetails) {
-        return res.status(404).json({ error: 'User details not found' });
-      }
-
-      // Update the transaction data
-      transaction.receiptno = receiptno;
-      transaction.transaction_date = transaction_date;
-      transaction.accountname = userDetails.accountname;
-      transaction.accounttype = userDetails.accounttype;
-      transaction.accountno = userDetails.accountno;
-      transaction.amountpaid = amountpaid;
-      transaction.description = description;
-      transaction.incomegroupcode = incomegroupcode;
-
-      await transaction.save();
-
-      return res.json({ message: 'Transaction updated successfully' });
-    } catch (error) {
-      console.error('Error updating transaction:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+    if (!transaction) {
+      return res.status(404).json({ error: 'Transaction not found' });
     }
-  });
-  router.get('/transactions', async (req, res) => {
-    try {
-      const transactions = await Transaction.findAll();
-      console.log(transactions);
-      res.status(200).json(transactions);
-    } catch (error) {
-      console.error('Error retrieving transactions', error);
-      res.status(500).json({ message: 'An error occurred while retrieving transactions' });
+
+    // Fetch the user details from the UserDetails table
+    const userDetails = await UserDetails.findByPk(userDetailsId);
+
+    if (!userDetails) {
+      return res.status(404).json({ error: 'User details not found' });
     }
-  });
+
+    // Update the transaction data
+    transaction.receiptno = receiptno;
+    transaction.transaction_date = transaction_date;
+    transaction.accountname = userDetails.accountname;
+    transaction.accounttype = userDetails.accounttype;
+    transaction.accountno = userDetails.accountno;
+    transaction.amountpaid = amountpaid;
+    transaction.description = description;
+    transaction.incomegroupcode = incomegroupcode;  // Assign the provided incomegroupcode
+
+    await transaction.save();
+
+    return res.json({ message: 'Transaction updated successfully' });
+  } catch (error) {
+    console.error('Error updating transaction:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Rest of the code...
+
 
   router.post('/transactions', async (req, res) => {
     const {
@@ -81,7 +75,7 @@ router.put('/transactions/:id', async (req, res) => {
         accountname: userDetails.accountname,
         accounttype: userDetails.accounttype,
         accountno: userDetails.accountno,
-        amountpaid: amountToPay !== "" ? parseFloat(amountToPay) : null,
+        amountpaid,
         description,
         incomegroupcode
       });
