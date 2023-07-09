@@ -33,6 +33,16 @@ const Use = db.define("Use", {
   amounttopay: {
     type: Sequelize.DECIMAL(10, 2),
     allowNull: true,
+      receiptno: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  },
+  paymenttype: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: false,
   },
 });
 
