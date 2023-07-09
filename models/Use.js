@@ -33,17 +33,28 @@ const Use = db.define("Use", {
   amounttopay: {
     type: Sequelize.DECIMAL(10, 2),
     allowNull: true,
-      receiptno: {
+  },
+  receiptno: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: false,
   },
+  description: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  change: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    unique: false,
   },
   paymenttype: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: false,
   },
-});
+},
+);
 
 module.exports = Use;
