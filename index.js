@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
 
     // section to Start the server //
     app.listen(3000, () => {
-      console.log('App listening on https://pos-server-ptaz.onrender.com/');
+      console.log('App listening on http://localhost:3000');
     });
   } catch (error) {
     console.error('Unable to connect to the database:', error);
