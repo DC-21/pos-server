@@ -29,7 +29,7 @@ const Transaction = db.define("Transaction", {
     allowNull: false,
   },
   amountpaid: {
-    type: Sequelize.DECIMAL(10, 2),
+    type: Sequelize.INTEGER,
     allowNull: false,
   },
   description: {
