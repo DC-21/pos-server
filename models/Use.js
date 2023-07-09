@@ -6,7 +6,7 @@ const Use = db.define("Use", {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    allowNull: false,
+    allowNull: true,
   },
   receiptno: {
     type: Sequelize.STRING,
