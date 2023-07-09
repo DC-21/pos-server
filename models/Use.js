@@ -44,7 +44,7 @@ const Use = db.define("Use", {
     allowNull: false,
     unique: false,
   },
-  change: {
+  incomegroupcode: {
     type: Sequelize.STRING,
     allowNull: true,
     unique: false,
