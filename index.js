@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
 
     // section to Start the server //
     app.listen(3000, () => {
-      console.log('App listening on https://pos-cdaf9f04j-dc-21.vercel.app');
+      console.log('App listening on https://pos-server-ptaz.onrender.com/');
     });
   } catch (error) {
     console.error('Unable to connect to the database:', error);

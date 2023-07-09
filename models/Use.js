@@ -8,6 +8,11 @@ const Use = db.define("Use", {
     primaryKey: true,
     allowNull: false,
   },
+  receiptno: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: false,
+  },
   accounttype: {
     type: Sequelize.STRING,
     allowNull: false,
