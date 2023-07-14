@@ -20,9 +20,11 @@ const generateReceiptPDF = (transactionData, res) => {
       // Add transaction details to the PDF
       doc.text(`Receipt No: ${transactionData.receiptno}`);
       doc.text(`Transaction Date: ${transactionData.transaction_date}`);
-      // Add more transaction details as needed
-
-      // Finalize the PDF and end the response
+      doc.text(`Account Name: ${transactionData.accountname}`)
+      doc.text(`Account No: ${transactionData.accountno}`)
+      doc.text(`Amount Paid: ${transactionData.amountpaid}`);
+      doc.text(`Description: ${transactionData.description}`);
+      doc.text(`Income Group Code: ${transactionData.incomegroupcode}`);
       doc.end();
 
       resolve();
