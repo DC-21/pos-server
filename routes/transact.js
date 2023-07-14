@@ -5,23 +5,25 @@ const PDFDocument = require('pdfkit');
 const router = express.Router();
 
 // Function to generate a PDF receipt
-const generateReceiptPDF = (transactionData, res) => {
+const generateReceiptPDF = (transactionData) => {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
-        size: 'A6' // Set the size of the PDF to A5
+        size: 'A6'
       });
 
-      // Set the response headers for PDF
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="receipt.pdf"');
+      // Buffer to store the generated PDF
+      const buffers = [];
 
-      // Pipe the PDF document to the response
-      doc.pipe(res);
+      // Pipe the PDF document to the buffer
+      doc.on('data', (chunk) => {
+        buffers.push(chunk);
+      });
 
-      // Set the font size and line spacing
-      doc.fontSize(10);
-      doc.lineGap(4);
+      doc.on('end', () => {
+        const pdfBuffer = Buffer.concat(buffers);
+        resolve(pdfBuffer);
+      });
 
       // Add transaction details to the PDF
       doc.text(`Receipt No: ${transactionData.receiptno}`);
@@ -33,8 +35,6 @@ const generateReceiptPDF = (transactionData, res) => {
       doc.text(`Income Group Code: ${transactionData.incomegroupcode}`);
 
       doc.end();
-
-      resolve();
     } catch (error) {
       reject(error);
     }
@@ -52,15 +52,16 @@ router.get("/transactions/latest", async (req, res) => {
     }
 
     // Generate the PDF receipt
-    await generateReceiptPDF(latestTransaction, res);
+    const pdfBuffer = await generateReceiptPDF(latestTransaction);
+
+    // Set the response headers for PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(pdfBuffer);
   } catch (error) {
     console.error("Error generating PDF receipt:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
 
 router.put("/transactions/:id", async (req, res) => {
   const { id } = req.params;
