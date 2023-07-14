@@ -4,8 +4,7 @@ const express = require("express");
 const PDFDocument = require('pdfkit');
 const router = express.Router();
 
-// Function to generate a PDF receipt
-const generateReceiptPDF = (transactionData) => {
+const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
@@ -24,6 +23,15 @@ const generateReceiptPDF = (transactionData) => {
         const pdfBuffer = Buffer.concat(buffers);
         resolve(pdfBuffer);
       });
+
+      // Set the font size for the company name
+      doc.fontSize(14);
+
+      // Add company name to the PDF
+      doc.text('Sacip Solutions', { align: 'center' });
+
+      // Reset the font size for transaction details
+      doc.fontSize(10);
 
       // Add transaction details to the PDF
       doc.text(`Receipt No: ${transactionData.receiptno}`);
@@ -52,7 +60,7 @@ router.get("/transactions/latest", async (req, res) => {
     }
 
     // Generate the PDF receipt
-    const pdfBuffer = await generateReceiptPDF(latestTransaction);
+    const pdfBuffer = await generateReceiptPDF(latestTransaction, 'Your Company Name');
 
     // Set the response headers for PDF
     res.setHeader('Content-Type', 'application/pdf');
