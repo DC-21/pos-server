@@ -1,7 +1,36 @@
 const Transaction = require("../models/Transaction");
 const UserDetails = require("../models/Use");
 const express = require("express");
+const PDFDocument = require('pdfkit');
 const router = express.Router();
+
+// Function to generate a PDF receipt
+const generateReceiptPDF = (transactionData, res) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument();
+
+      // Set the response headers for PDF
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="receipt.pdf"');
+
+      // Pipe the PDF document to the response
+      doc.pipe(res);
+
+      // Add transaction details to the PDF
+      doc.text(`Receipt No: ${transactionData.receiptno}`);
+      doc.text(`Transaction Date: ${transactionData.transaction_date}`);
+      // Add more transaction details as needed
+
+      // Finalize the PDF and end the response
+      doc.end();
+
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 router.get("/transactions/latest", async (req, res) => {
   try {
@@ -13,9 +42,10 @@ router.get("/transactions/latest", async (req, res) => {
       return res.status(404).json({ error: "No transaction found" });
     }
 
-    return res.json(latestTransaction);
+    // Generate the PDF receipt
+    await generateReceiptPDF(latestTransaction, res);
   } catch (error) {
-    console.error("Error retrieving latest transaction:", error);
+    console.error("Error generating PDF receipt:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
