@@ -1,9 +1,27 @@
-const Transaction = require('../models/Transaction');
-const UserDetails = require('../models/Use');
-const express = require('express');
+const Transaction = require("../models/Transaction");
+const UserDetails = require("../models/Use");
+const express = require("express");
 const router = express.Router();
 
-router.put('/transactions/:id', async (req, res) => {
+router.get("/transactions/latest", async (req, res) => {
+  try {
+    const latestTransaction = await Transaction.findOne({
+      order: [["id", "DESC"]],
+    });
+
+    if (!latestTransaction) {
+      return res.status(404).json({ error: "No transaction found" });
+    }
+
+    return res.json(latestTransaction);
+  } catch (error) {
+    console.error("Error retrieving latest transaction:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+router.put("/transactions/:id", async (req, res) => {
   const { id } = req.params;
   const {
     receiptno,
@@ -11,21 +29,21 @@ router.put('/transactions/:id', async (req, res) => {
     userDetailsId,
     amountpaid,
     description,
-    incomegroupcode
+    incomegroupcode,
   } = req.body;
 
   try {
     const transaction = await Transaction.findByPk(id);
 
     if (!transaction) {
-      return res.status(404).json({ error: 'Transaction not found' });
+      return res.status(404).json({ error: "Transaction not found" });
     }
 
     // Fetch the user details from the UserDetails table
     const userDetails = await UserDetails.findByPk(userDetailsId);
 
     if (!userDetails) {
-      return res.status(404).json({ error: 'User details not found' });
+      return res.status(404).json({ error: "User details not found" });
     }
 
     // transaction data
@@ -40,51 +58,51 @@ router.put('/transactions/:id', async (req, res) => {
 
     await transaction.save();
 
-    return res.json({ message: 'Transaction updated successfully' });
+    return res.json({ message: "Transaction updated successfully" });
   } catch (error) {
-    console.error('Error updating transaction:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating transaction:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Rest of the code...
+router.post("/transactions", async (req, res) => {
+  const {
+    receiptno,
+    transaction_date,
+    userDetailsId,
+    amountpaid,
+    description,
+    incomegroupcode,
+  } = req.body;
 
+  try {
+    // Fetch the user details from the UserDetails table
+    const userDetails = await UserDetails.findByPk(userDetailsId);
 
-  router.post('/transactions', async (req, res) => {
-    const {
+    if (!userDetails) {
+      return res.status(404).json({ error: "User details not found" });
+    }
+
+    // Create a new transaction
+    const newTransaction = await Transaction.create({
       receiptno,
       transaction_date,
-      userDetailsId,
+      accountname: userDetails.accountname,
+      accounttype: userDetails.accounttype,
+      accountno: userDetails.accountno,
       amountpaid,
       description,
       incomegroupcode,
-    } = req.body;
+    });
 
-    try {
-      // Fetch the user details from the UserDetails table
-      const userDetails = await UserDetails.findByPk(userDetailsId);
+    return res.status(201).json({
+      message: "Transaction created successfully",
+      transaction: newTransaction,
+    });
+  } catch (error) {
+    console.error("Error creating transaction:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-      if (!userDetails) {
-        return res.status(404).json({ error: 'User details not found' });
-      }
-
-      // Create a new transaction
-      const newTransaction = await Transaction.create({
-        receiptno,
-        transaction_date,
-        accountname: userDetails.accountname,
-        accounttype: userDetails.accounttype,
-        accountno: userDetails.accountno,
-        amountpaid,
-        description,
-        incomegroupcode
-      });
-
-      return res.status(201).json({ message: 'Transaction created successfully', transaction: newTransaction });
-    } catch (error) {
-      console.error('Error creating transaction:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-
-  module.exports = router;
+module.exports = router;
