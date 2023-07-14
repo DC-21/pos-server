@@ -8,7 +8,9 @@ const router = express.Router();
 const generateReceiptPDF = (transactionData, res) => {
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument();
+      const doc = new PDFDocument({
+        size: 'A6' // Set the size of the PDF to A5
+      });
 
       // Set the response headers for PDF
       res.setHeader('Content-Type', 'application/pdf');
@@ -17,14 +19,19 @@ const generateReceiptPDF = (transactionData, res) => {
       // Pipe the PDF document to the response
       doc.pipe(res);
 
+      // Set the font size and line spacing
+      doc.fontSize(10);
+      doc.lineGap(4);
+
       // Add transaction details to the PDF
       doc.text(`Receipt No: ${transactionData.receiptno}`);
       doc.text(`Transaction Date: ${transactionData.transaction_date}`);
-      doc.text(`Account Name: ${transactionData.accountname}`)
-      doc.text(`Account No: ${transactionData.accountno}`)
+      doc.text(`Account Name: ${transactionData.accountname}`);
+      doc.text(`Account No: ${transactionData.accountno}`);
       doc.text(`Amount Paid: ${transactionData.amountpaid}`);
       doc.text(`Description: ${transactionData.description}`);
       doc.text(`Income Group Code: ${transactionData.incomegroupcode}`);
+
       doc.end();
 
       resolve();
@@ -51,6 +58,8 @@ router.get("/transactions/latest", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 
 router.put("/transactions/:id", async (req, res) => {
