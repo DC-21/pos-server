@@ -1,25 +1,25 @@
 const Transaction = require("../models/Transaction");
 const UserDetails = require("../models/Use");
 const express = require("express");
-const PDFDocument = require('pdfkit');
+const PDFDocument = require("pdfkit");
 const router = express.Router();
 
 const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
-        size: 'A6'
+        size: "A6",
       });
 
       // Buffer to store the generated PDF
       const buffers = [];
 
       // Pipe the PDF document to the buffer
-      doc.on('data', (chunk) => {
+      doc.on("data", (chunk) => {
         buffers.push(chunk);
       });
 
-      doc.on('end', () => {
+      doc.on("end", () => {
         const pdfBuffer = Buffer.concat(buffers);
         resolve(pdfBuffer);
       });
@@ -28,18 +28,27 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.fontSize(14);
 
       // Add company name to the PDF
-      doc.text('Sacip Solutions', { align: 'center' });
+      doc.text("Sacip Solutions", { align: "center" });
+
+      // Move down by 2 lines
+      doc.moveDown(2);
 
       // Reset the font size for transaction details
       doc.fontSize(10);
 
-      // Add transaction details to the PDF
+      // Add transaction details to the PDF with line spacing
       doc.text(`Receipt No: ${transactionData.receiptno}`);
+      doc.moveDown();
       doc.text(`Transaction Date: ${transactionData.transaction_date}`);
+      doc.moveDown();
       doc.text(`Account Name: ${transactionData.accountname}`);
+      doc.moveDown();
       doc.text(`Account No: ${transactionData.accountno}`);
+      doc.moveDown();
       doc.text(`Amount Paid: ${transactionData.amountpaid}`);
+      doc.moveDown();
       doc.text(`Description: ${transactionData.description}`);
+      doc.moveDown();
       doc.text(`Income Group Code: ${transactionData.incomegroupcode}`);
 
       doc.end();
@@ -60,10 +69,13 @@ router.get("/transactions/latest", async (req, res) => {
     }
 
     // Generate the PDF receipt
-    const pdfBuffer = await generateReceiptPDF(latestTransaction, 'Your Company Name');
+    const pdfBuffer = await generateReceiptPDF(
+      latestTransaction,
+      "Your Company Name"
+    );
 
     // Set the response headers for PDF
-    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader("Content-Type", "application/pdf");
     res.send(pdfBuffer);
   } catch (error) {
     console.error("Error generating PDF receipt:", error);
