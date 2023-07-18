@@ -33,7 +33,14 @@ const generateReceiptPDF = (transactionData, companyName) => {
 
       // Add company logo (assuming logo.png is present in the same directory)
       const logoPath = path.join(__dirname, "Sacip.png"); // Update the path accordingly
-      doc.image(logoPath, { width: 50 });
+      const logoWidth = 50;
+      const logoHeight = 50;
+      const logoX = doc.page.width / 2 - logoWidth / 2;
+      const logoY = doc.y;
+      doc.image(logoPath, logoX, logoY, { width: logoWidth, height: logoHeight });
+
+      // Add space between logo and company name
+      doc.moveDown(1);
 
       // Add company name to the PDF in the same line as the logo
       doc.text(`  SaCip Solutions`, { align: "center" });
