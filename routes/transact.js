@@ -32,8 +32,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
       // Set the font size for the company name
       doc.fontSize(14);
 
-      // Add company logo (assuming logo.png is present in the same directory)
-      const logoPath = path.join(__dirname, "Sacip.png"); // Update the path accordingly
+      const logoPath = path.join(__dirname, "Sacip.png");
       const logoWidth = 50;
       const logoHeight = 50;
       const logoX = doc.page.width / 2 - logoWidth / 2;
@@ -84,7 +83,6 @@ router.get("/transactions/latest", async (req, res) => {
       return res.status(404).json({ error: "No transaction found" });
     }
 
-    // Generate the PDF receipt with company name "Sacip"
     const pdfBuffer = await generateReceiptPDF(latestTransaction, "Sacip");
 
     // Set the response headers for PDF
@@ -114,7 +112,7 @@ router.put("/transactions/:id", async (req, res) => {
       return res.status(404).json({ error: "Transaction not found" });
     }
 
-    // Fetch the user details from the UserDetails table
+    // Fetch the user details from the Uses table
     const userDetails = await UserDetails.findByPk(userDetailsId);
 
     if (!userDetails) {
@@ -157,10 +155,8 @@ router.post("/transactions", async (req, res) => {
       return res.status(404).json({ error: "User details not found" });
     }
 
-    // Get the current date in the Lusaka time zone
     const currentDate = moment().tz("Africa/Lusaka").format("YYYY-MM-DD HH:mm:ss");
 
-    // Create a new transaction with the recorded transaction date in Lusaka time zone
     const newTransaction = await Transaction.create({
       receiptno,
       transaction_date: currentDate,
