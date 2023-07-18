@@ -46,7 +46,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.text(`  SaCip Solutions`, { align: "center" });
 
       // Move down by 2 lines
-      doc.moveDown(2);
+      doc.moveDown(1);
 
       // Reset the font size for transaction details
       doc.fontSize(10);
