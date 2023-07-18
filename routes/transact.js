@@ -160,7 +160,7 @@ router.post("/transactions", async (req, res) => {
     // Get the current date in the Lusaka time zone
     const currentDate = moment().tz("Africa/Lusaka").format("YYYY-MM-DD HH:mm:ss");
 
-    // Create a new transaction with the recorded transaction date
+    // Create a new transaction with the recorded transaction date in Lusaka time zone
     const newTransaction = await Transaction.create({
       receiptno,
       transaction_date: currentDate,
