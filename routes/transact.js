@@ -5,6 +5,7 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const router = express.Router();
 const path = require("path");
+const moment = require("moment-timezone");
 
 
 // Function to generate the PDF receipt with company logo and name
@@ -142,7 +143,6 @@ router.put("/transactions/:id", async (req, res) => {
 router.post("/transactions", async (req, res) => {
   const {
     receiptno,
-    transaction_date,
     userDetailsId,
     amountpaid,
     description,
@@ -157,10 +157,13 @@ router.post("/transactions", async (req, res) => {
       return res.status(404).json({ error: "User details not found" });
     }
 
-    // Create a new transaction
+    // Get the current date in the Lusaka time zone
+    const currentDate = moment().tz("Africa/Lusaka").format("YYYY-MM-DD HH:mm:ss");
+
+    // Create a new transaction with the recorded transaction date
     const newTransaction = await Transaction.create({
       receiptno,
-      transaction_date,
+      transaction_date: currentDate,
       accountname: userDetails.accountname,
       accounttype: userDetails.accounttype,
       accountno: userDetails.accountno,
@@ -178,5 +181,6 @@ router.post("/transactions", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 module.exports = router;
