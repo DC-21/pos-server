@@ -4,7 +4,8 @@ const express = require("express");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const router = express.Router();
-const path = require("./sacip.png");
+const path = require("path");
+
 
 // Function to generate the PDF receipt with company logo and name
 const generateReceiptPDF = (transactionData, companyName) => {
@@ -31,7 +32,8 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.fontSize(14);
 
       // Add company logo (assuming logo.png is present in the same directory)
-      doc.image("sacip.png", { width: 50 });
+      const logoPath = path.join(__dirname, "Sacip.png"); // Update the path accordingly
+      doc.image(logoPath, { width: 50 });
 
       // Add company name to the PDF in the same line as the logo
       doc.text(`  SaCip Solutions`, { align: "center" });
