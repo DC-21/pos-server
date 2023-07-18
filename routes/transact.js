@@ -2,8 +2,11 @@ const Transaction = require("../models/Transaction");
 const UserDetails = require("../models/Use");
 const express = require("express");
 const PDFDocument = require("pdfkit");
+const fs = require("fs");
 const router = express.Router();
+const path = require("./sacip.png");
 
+// Function to generate the PDF receipt with company logo and name
 const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
     try {
@@ -27,8 +30,11 @@ const generateReceiptPDF = (transactionData, companyName) => {
       // Set the font size for the company name
       doc.fontSize(14);
 
-      // Add company name to the PDF
-      doc.text("Sacip Solutions", { align: "center" });
+      // Add company logo (assuming logo.png is present in the same directory)
+      doc.image("sacip.png", { width: 50 });
+
+      // Add company name to the PDF in the same line as the logo
+      doc.text(`  SaCip Solutions`, { align: "center" });
 
       // Move down by 2 lines
       doc.moveDown(2);
@@ -68,11 +74,8 @@ router.get("/transactions/latest", async (req, res) => {
       return res.status(404).json({ error: "No transaction found" });
     }
 
-    // Generate the PDF receipt
-    const pdfBuffer = await generateReceiptPDF(
-      latestTransaction,
-      "Your Company Name"
-    );
+    // Generate the PDF receipt with company name "Sacip"
+    const pdfBuffer = await generateReceiptPDF(latestTransaction, "Sacip");
 
     // Set the response headers for PDF
     res.setHeader("Content-Type", "application/pdf");
