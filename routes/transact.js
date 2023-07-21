@@ -30,7 +30,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
       });
 
       // Set the font size for the company name
-      doc.fontSize(14);
+      doc.fontSize(12);
 
       const logoPath = path.join(__dirname, "Sacip.png");
       const logoWidth = 100;
@@ -49,12 +49,13 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.moveDown(1);
 
       // Reset the font size for transaction details
-      doc.fontSize(10);
+      const transactionDate = moment(transactionData.transaction_date)
+        .format("ddd MMM DD YYYY HH:mm:ss");
 
       // Add transaction details to the PDF with line spacing
       doc.text(`Receipt No: ${transactionData.receiptno}`);
       doc.moveDown();
-      doc.text(`Transaction Date: ${transactionData.transaction_date}`);
+      doc.text(`Transaction Date: ${transactionDate}`);
       doc.moveDown();
       doc.text(`Account Name: ${transactionData.accountname}`);
       doc.moveDown();
@@ -72,7 +73,6 @@ const generateReceiptPDF = (transactionData, companyName) => {
     }
   });
 };
-
 router.get("/transactions/latest", async (req, res) => {
   try {
     const latestTransaction = await Transaction.findOne({
