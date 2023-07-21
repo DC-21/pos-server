@@ -47,6 +47,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
 
       // Move down by 2 lines
       doc.moveDown(1);
+      doc.fontSize(10);
 
       // Reset the font size for transaction details
       const transactionDate = moment(transactionData.transaction_date)
