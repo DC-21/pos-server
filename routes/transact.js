@@ -33,7 +33,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.fontSize(14);
 
       const logoPath = path.join(__dirname, "Sacip.png");
-      const logoWidth = 50;
+      const logoWidth = 100;
       const logoHeight = 50;
       const logoX = doc.page.width / 2 - logoWidth / 2;
       const logoY = doc.y;
@@ -43,7 +43,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.moveDown(1);
 
       // Add company name to the PDF in the same line as the logo
-      doc.text(`  SaCip Solutions`, { align: "center" });
+      doc.text(`  SaCip Software Solutions`, { align: "center" });
 
       // Move down by 2 lines
       doc.moveDown(1);
