@@ -8,10 +8,6 @@ const Transaction = db.define("Transaction", {
     primaryKey: true,
     allowNull: false,
   },
-  receiptno: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
   transaction_date: {
     type: Sequelize.DATE,
     allowNull: false,
@@ -22,7 +18,7 @@ const Transaction = db.define("Transaction", {
   },
   accounttype: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   accountno: {
     type: Sequelize.INTEGER,

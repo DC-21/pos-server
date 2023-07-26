@@ -13,7 +13,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
-        size: "A4",
+        size: "A3",
         layout: "landscape",
       });
 
@@ -31,7 +31,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
       });
 
       // Set the font size for the company name
-      doc.fontSize(12);
+      doc.fontSize(18);
 
       const logoPath = path.join(__dirname, "Sacip.png");
       const logoWidth = 100;
@@ -48,7 +48,7 @@ const generateReceiptPDF = (transactionData, companyName) => {
 
       // Move down by 2 lines
       doc.moveDown(1);
-      doc.fontSize(10);
+      doc.fontSize(16);
 
       // Reset the font size for transaction details
       const transactionDate = moment(transactionData.transaction_date)
@@ -142,7 +142,6 @@ router.put("/transactions/:id", async (req, res) => {
 
 router.post("/transactions", async (req, res) => {
   const {
-    receiptno,
     userDetailsId,
     amountpaid,
     description,
@@ -160,7 +159,6 @@ router.post("/transactions", async (req, res) => {
     const currentDate = moment().tz("Africa/Lusaka").format("YYYY-MM-DD HH:mm:ss");
 
     const newTransaction = await Transaction.create({
-      receiptno,
       transaction_date: currentDate,
       accountname: userDetails.accountname,
       accounttype: userDetails.accounttype,
