@@ -27,6 +27,16 @@ const generateNextReceiptNumber = async () => {
   }
 };
 
+router.get("/transactions/next-receiptno", async (req, res) => {
+  try {
+    const receiptno = await generateNextReceiptNumber();
+    return res.json({ receiptno });
+  } catch (error) {
+    console.error("Error fetching next receipt number:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Function to generate the PDF receipt with company logo and name
 const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
