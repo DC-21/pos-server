@@ -1,14 +1,18 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/db");
 
-const Use = db.define("Use", {
+const CompanyData = db.define("CompanyData", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false,
   },
-  Company_Name: {
+  Name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  Address: {
     type: Sequelize.STRING,
     allowNull: false,
   },
@@ -32,4 +36,4 @@ const Use = db.define("Use", {
   timestamps: false,
 });
 
-module.exports = Use;
+module.exports = CompanyData;

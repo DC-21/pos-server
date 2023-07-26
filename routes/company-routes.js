@@ -4,7 +4,7 @@ const CompanyData = require('../models/Company-data');
 
 router.get('/company', async(req,res)=>{
     try{
-        const companies = await Use.findAll();
+        const companies = await CompanyData.findAll();
         console.log(companies);
         res.status(200).json(companies);
     } catch(error){
@@ -16,7 +16,7 @@ router.get('/company', async(req,res)=>{
 router.post('/company', async(req,res)=>{
     try{
         const companyDetails = req.body;
-        const newCompany = await Use.create(companyDetails);
+        const newCompany = await CompanyData.create(companyDetails);
         res.status(201).json({ message: 'User created successfully.', user: newUser });
     }
     catch (error) {

@@ -2,9 +2,9 @@ const express = require('express');
 const sequelize = require('./utils/db');
 const useRouter = require('./routes/routes');
 const useTransact = require('./routes/transact');
+const useCompany = require('./routes/company-routes');
 
 const cors = require("cors");
-
 const app = express();
 
 // Configure bodyParser //
@@ -12,9 +12,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Use the router for the '/user' routes
+// Use routes
 app.use('/', useRouter);
 app.use('/', useTransact);
+app.use('/', useCompany);
 
 
 // Error handling middleware to protect server from crashing //
@@ -25,19 +26,14 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message: message });
 });
 
-
-
-
 //section to Test the database connection //
 (async () => {
   try {
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
 
-    // section Synchronize models with the database //
     await sequelize.sync();
 
-    // section to Start the server //
     app.listen(3000, () => {
       console.log('App listening on http://localhost:3000');
     });
