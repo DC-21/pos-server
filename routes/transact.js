@@ -8,6 +8,17 @@ const path = require("path");
 const moment = require("moment-timezone");
 
 
+router.get("/transactions/next-receiptno", async (req, res) => {
+  try {
+    const receiptno = await generateNextReceiptNumber();
+    return res.json({ receiptno });
+  } catch (error) {
+    console.error("Error fetching next receipt number:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Function to generate the next receipt number
 const generateNextReceiptNumber = async () => {
   try {
     const latestTransaction = await Transaction.findOne({
@@ -26,16 +37,6 @@ const generateNextReceiptNumber = async () => {
     throw error;
   }
 };
-
-router.get("/transactions/next-receiptno", async (req, res) => {
-  try {
-    const receiptno = await generateNextReceiptNumber();
-    return res.json({ receiptno });
-  } catch (error) {
-    console.error("Error fetching next receipt number:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 // Function to generate the PDF receipt with company logo and name
 const generateReceiptPDF = (transactionData, companyName) => {
@@ -169,7 +170,6 @@ router.put("/transactions/:id", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-
 router.post("/transactions", async (req, res) => {
   const {
     userDetailsId,
@@ -212,6 +212,5 @@ router.post("/transactions", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 module.exports = router;
