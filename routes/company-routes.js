@@ -17,7 +17,7 @@ router.post('/company', async(req,res)=>{
     try{
         const companyDetails = req.body;
         const newCompany = await CompanyData.create(companyDetails);
-        res.status(201).json({ message: 'User created successfully.', user: newUser });
+        res.status(201).json({ message: 'User created successfully.', user: newCompany });
     }
     catch (error) {
         console.error('Error creating user:', error);
