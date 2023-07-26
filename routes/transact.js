@@ -8,10 +8,23 @@ const path = require("path");
 const moment = require("moment-timezone");
 
 
-let latestReceiptNumber = 800;
-const generateNextReceiptNumber = () => {
-  latestReceiptNumber += 1;
-  return `RCT-${latestReceiptNumber.toString().padStart(6, "0")}`;
+const generateNextReceiptNumber = async () => {
+  try {
+    const latestTransaction = await Transaction.findOne({
+      order: [["id", "DESC"]],
+    });
+
+    let latestReceiptNumber = 800;
+    if (latestTransaction) {
+      const receiptNoParts = latestTransaction.receiptno.split("-");
+      latestReceiptNumber = parseInt(receiptNoParts[1]) + 1;
+    }
+
+    return `RCT-${latestReceiptNumber.toString().padStart(6, "0")}`;
+  } catch (error) {
+    console.error("Error generating receipt number:", error);
+    throw error;
+  }
 };
 
 // Function to generate the PDF receipt with company logo and name
@@ -71,6 +84,8 @@ const generateReceiptPDF = (transactionData, companyName) => {
       doc.moveDown();
       doc.text(`Amount Paid: ${transactionData.amountpaid}`);
       doc.moveDown();
+      doc.text(`Payment Type: ${transactionData.payment_type}`);
+      doc.moveDown();
       doc.text(`Description: ${transactionData.description}`);
       doc.moveDown();
       doc.text(`Income Group Code: ${transactionData.incomegroupcode}`);
@@ -120,7 +135,6 @@ router.put("/transactions/:id", async (req, res) => {
       return res.status(404).json({ error: "Transaction not found" });
     }
 
-    // Fetch the user details from the Uses table
     const userDetails = await UserDetails.findByPk(userDetailsId);
 
     if (!userDetails) {
@@ -152,6 +166,7 @@ router.post("/transactions", async (req, res) => {
     amountpaid,
     description,
     incomegroupcode,
+    payment_type,
   } = req.body;
 
   try {
@@ -164,7 +179,7 @@ router.post("/transactions", async (req, res) => {
 
     const currentDate = moment().tz("Africa/Lusaka").format("YYYY-MM-DD HH:mm:ss");
 
-    const receiptno = generateNextReceiptNumber(); // Use the generated receipt number
+    const receiptno = await generateNextReceiptNumber();
 
     const newTransaction = await Transaction.create({
       receiptno,
@@ -172,6 +187,7 @@ router.post("/transactions", async (req, res) => {
       accountname: userDetails.accountname,
       accounttype: userDetails.accounttype,
       accountno: userDetails.accountno,
+      payment_type,
       amountpaid,
       description,
       incomegroupcode,

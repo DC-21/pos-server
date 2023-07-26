@@ -11,6 +11,7 @@ const Transaction = db.define("Transaction", {
   receiptno: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   transaction_date: {
     type: Sequelize.DATE,
