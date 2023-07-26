@@ -29,8 +29,13 @@ router.delete('/company/:id', async (req, res) => {
         const { id } = req.params;
         const company = await CompanyData.findByPk(id);
         if (!company) {
-            return res.status(404).json({ message: 'User not found.' });
+            return res.status(404).json({ message: 'company not found.' });
         }
+        await company.destroy({
+            where: {
+                id: id
+            }
+        });
     } catch (error) {
         console.error('Error deleting company:', error);
         res.status(500).json({ message: 'An error occurred while deleting company.' });

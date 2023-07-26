@@ -32,6 +32,10 @@ const CompanyData = db.define("CompanyData", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  Image: {
+    type: Sequelize.BLOB,
+    allowNull: true,
+  },
 }, {
   timestamps: false,
 });
