@@ -8,16 +8,24 @@ const Use = db.define("Use", {
     primaryKey: true,
     allowNull: false,
   },
-  accountno: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  accountname: {
+  Company_Name: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  accountbalance: {
-    type: Sequelize.DECIMAL(10, 2),
+  Post_Address: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  Telephone: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  Fax: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  Email: {
+    type: Sequelize.STRING,
     allowNull: false,
   },
 }, {
