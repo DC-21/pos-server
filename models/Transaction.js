@@ -32,6 +32,10 @@ const Transaction = db.define("Transaction", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  payment_type: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   description: {
     type: Sequelize.STRING,
     allowNull: false,
