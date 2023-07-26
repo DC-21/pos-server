@@ -13,7 +13,8 @@ const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
-        size: "A6",
+        size: "A4",
+        layout: "landscape",
       });
 
       // Buffer to store the generated PDF
