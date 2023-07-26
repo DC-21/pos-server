@@ -8,6 +8,12 @@ const path = require("path");
 const moment = require("moment-timezone");
 
 
+let latestReceiptNumber = 800;
+const generateNextReceiptNumber = () => {
+  latestReceiptNumber += 1;
+  return `RCT-${latestReceiptNumber.toString().padStart(6, "0")}`;
+};
+
 // Function to generate the PDF receipt with company logo and name
 const generateReceiptPDF = (transactionData, companyName) => {
   return new Promise((resolve, reject) => {
@@ -158,7 +164,10 @@ router.post("/transactions", async (req, res) => {
 
     const currentDate = moment().tz("Africa/Lusaka").format("YYYY-MM-DD HH:mm:ss");
 
+    const receiptno = generateNextReceiptNumber(); // Use the generated receipt number
+
     const newTransaction = await Transaction.create({
+      receiptno,
       transaction_date: currentDate,
       accountname: userDetails.accountname,
       accounttype: userDetails.accounttype,
