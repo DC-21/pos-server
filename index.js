@@ -3,6 +3,7 @@ const sequelize = require('./utils/db');
 const useRouter = require('./routes/routes');
 const useTransact = require('./routes/transact');
 const useCompany = require('./routes/company-routes');
+const useIncome = require('./routes/income-groups');
 
 const cors = require("cors");
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', useRouter);
 app.use('/', useTransact);
 app.use('/', useCompany);
+app.use('/',useIncome);
 
 
 // Error handling middleware to protect server from crashing //
