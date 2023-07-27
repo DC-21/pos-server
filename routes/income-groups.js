@@ -5,9 +5,9 @@ const axios = require("axios");
 // Global variable to store the formatted data
 let fetchedData = [];
 
-router.get('/customers', async (req, res) => {
+router.get('/income-group-codes', async (req, res) => {
   try {
-    const loginUrl = "http://23.254.128.117:7048/BusinessCentral140/ODataV4/Company('Mulonga%20Water%20Supply')/Customers";
+    const loginUrl = "http://23.254.128.117:7048/BusinessCentral140/ODataV4/Company('Mulonga%20Water%20Supply')/IncomeGroups";
 
     const username = 'WEBUSER';
     const password = 'Pass@123';
@@ -24,13 +24,9 @@ router.get('/customers', async (req, res) => {
     const rawData = dataResponse.data.value;
 
     // Format the data into an array of objects with the necessary fields
-    const formattedData = rawData.map(customer => ({
-      customerNo: customer.No,
-      name: customer.Name,
-      address: customer.Address,
-      address2: customer.Address_2,
-      phoneNo: customer.Phone_No,
-      balanceDueLCY: customer.Balance_Due_LCY,
+    const formattedData = rawData.map(incomegroups => ({
+      code: incomegroups.Code,
+      name: incomegroups.Name,
     }));
 
     fetchedData = formattedData;
@@ -44,7 +40,7 @@ router.get('/customers', async (req, res) => {
   }
 });
 
-router.post('/customers', async (req, res) => {
+router.post('/income-group-codes', async (req, res) => {
   try {
     // Use the data stored in the global variable to save to the database
     console.log('Data to be saved:', fetchedData);
@@ -55,7 +51,7 @@ router.post('/customers', async (req, res) => {
     }
 
     // Save the fetchedData array to the database using Sequelize bulkCreate
-    await Customers.bulkCreate(fetchedData);
+    await IncomeGroups.bulkCreate(fetchedData);
 
     // Clear the data in the global variable after saving to the database
     fetchedData = [];
