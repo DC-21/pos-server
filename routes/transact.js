@@ -1,5 +1,5 @@
 const Transaction = require("../models/Transaction");
-const UserDetails = require("../models/Use");
+const UserDetails = require("../models/Customer");
 const express = require("express");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");

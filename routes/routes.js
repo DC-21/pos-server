@@ -1,74 +1,72 @@
 const router = require("express").Router();
-const Use = require('../models/Use');
+const Customers = require('../models/Customer');
+const axios = require("axios");
 
-router.get('/user-details', async (req, res) => {
+let fetchedData = []; // Global variable to store the formatted data
+
+router.get('/customers', async (req, res) => {
   try {
-    const users = await Use.findAll();
-    console.log(users);
-    res.status(200).json(users);
+    const loginUrl = "http://23.254.128.117:7048/BusinessCentral140/ODataV4/Company('Mulonga%20Water%20Supply')/Customers";
+
+    // Replace 'WEBUSER' and 'Pass@123' with your actual login credentials
+    const username = 'WEBUSER';
+    const password = 'Pass@123';
+
+    // Encode the username and password in base64
+    const authCredentials = Buffer.from(`${username}:${password}`).toString('base64');
+
+    // Set the Authorization header with the encoded credentials
+    const headers = {
+      Authorization: `Basic ${authCredentials}`,
+    };
+
+    // Make the data request with the headers containing the login details
+    const dataResponse = await axios.get(loginUrl, { headers });
+
+    // Process the data in 'dataResponse.data.value' as needed
+    const rawData = dataResponse.data.value;
+
+    // Format the data into an array of objects with the necessary fields
+    const formattedData = rawData.map(customer => ({
+      customerNo: customer.No,
+      name: customer.Name,
+      address: customer.Address,
+      address2: customer.Address_2,
+      phoneNo: customer.Phone_No,
+      balanceDueLCY: customer.Balance_Due_LCY,
+    }));
+
+    fetchedData = formattedData; // Store the formatted data in the global variable
+
+    console.log('Data fetched:', fetchedData);
+
+    res.status(200).json({ message: 'Data fetched successfully.', data: fetchedData });
   } catch (error) {
-    console.error('Error retrieving users:', error);
-    res.status(500).json({ message: 'An error occurred while retrieving users.' });
+    console.error('Error fetching data:', error);
+    res.status(500).json({ message: 'An error occurred while fetching data.' });
   }
 });
 
-router.put('/user-details/:id', async (req, res) => {
+router.post('/customers', async (req, res) => {
   try {
-    const { id } = req.params;
-    const userDetails = req.body;
+    // Use the data stored in the global variable to save to the database
+    console.log('Data to be saved:', fetchedData);
 
-    // Find the user by ID
-    const user = await Use.findByPk(id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+    // Check if there is data in the fetchedData array
+    if (fetchedData.length === 0) {
+      return res.status(400).json({ message: 'No data to save.' });
     }
 
-    // Update the user's account balance
-    const updatedAmount = user.accountbalance - userDetails.amounttopay;
-    user.accountbalance = updatedAmount;
-    user.amounttopay = userDetails.amounttopay; // Update the amounttopay field
+    // Save the fetchedData array to the database using Sequelize bulkCreate
+    await Customers.bulkCreate(fetchedData);
 
-    // Save the updated user
-    await user.save();
+    // Clear the data in the global variable after saving to the database
+    fetchedData = [];
 
-    res.status(200).json({ message: 'User details updated successfully.', user: user });
+    res.status(200).json({ message: 'Data saved successfully.' });
   } catch (error) {
-    console.error('Error updating user details:', error);
-    res.status(500).json({ message: 'An error occurred while updating user details.' });
-  }
-});
-
-router.post('/user-details', async (req, res) => {
-  try {
-    const userDetails = req.body;
-
-    // Create a new user
-    const newUser = await Use.create(userDetails);
-
-    res.status(201).json({ message: 'User created successfully.', user: newUser });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ message: 'An error occurred while creating user.' });
-  }
-});
-
-router.delete('/user-details/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const user = await Use.findByPk(id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-
-    await user.destroy();
-
-    res.status(200).json({ message: 'User deleted successfully.' });
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ message: 'An error occurred while deleting user.' });
+    console.error('Error saving data:', error);
+    res.status(500).json({ message: 'An error occurred while saving data.' });
   }
 });
 
