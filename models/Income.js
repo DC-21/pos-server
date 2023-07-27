@@ -8,14 +8,10 @@ const Income_groups = db.define("Income_groups", {
     primaryKey: true,
     allowNull: false,
   },
-  group_code: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true,
-  },
   income_group: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
 }, {
   timestamps: false,
