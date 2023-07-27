@@ -2,28 +2,25 @@ const router = require("express").Router();
 const Customers = require('../models/Customer');
 const axios = require("axios");
 
-let fetchedData = []; // Global variable to store the formatted data
+// Global variable to store the formatted data
+let fetchedData = [];
 
 router.get('/customers', async (req, res) => {
   try {
     const loginUrl = "http://23.254.128.117:7048/BusinessCentral140/ODataV4/Company('Mulonga%20Water%20Supply')/Customers";
 
-    // Replace 'WEBUSER' and 'Pass@123' with your actual login credentials
     const username = 'WEBUSER';
     const password = 'Pass@123';
 
-    // Encode the username and password in base64
+    // Encode the username and password in base64 and
+    // Set the Authorization header with the encoded credentials
     const authCredentials = Buffer.from(`${username}:${password}`).toString('base64');
 
-    // Set the Authorization header with the encoded credentials
     const headers = {
       Authorization: `Basic ${authCredentials}`,
     };
 
-    // Make the data request with the headers containing the login details
     const dataResponse = await axios.get(loginUrl, { headers });
-
-    // Process the data in 'dataResponse.data.value' as needed
     const rawData = dataResponse.data.value;
 
     // Format the data into an array of objects with the necessary fields
@@ -36,7 +33,7 @@ router.get('/customers', async (req, res) => {
       balanceDueLCY: customer.Balance_Due_LCY,
     }));
 
-    fetchedData = formattedData; // Store the formatted data in the global variable
+    fetchedData = formattedData;
 
     console.log('Data fetched:', fetchedData);
 
