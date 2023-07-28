@@ -37,6 +37,14 @@ const Transactions = db.define("Transactions", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  amt_tendered: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  change: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
   payment_type: {
     type: Sequelize.STRING,
     allowNull: false,
