@@ -63,4 +63,14 @@ router.post('/income-group-codes', async (req, res) => {
   }
 });
 
+
+router.get('/income-groupcodes', async(req,res)=>{
+  try{
+    const codes = await IncomeGroups.findAll();
+    return res.json({codes});
+  }catch (error) {
+    console.error("Error fetching next receipt number:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+})
 module.exports = router;

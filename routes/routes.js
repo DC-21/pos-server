@@ -67,4 +67,14 @@ router.post('/customers', async (req, res) => {
   }
 });
 
+router.get("/customer-details", async (req, res) => {
+  try {
+    const customerData = await Customers.findAll();
+    return res.json({ customerData });
+  } catch (error) {
+    console.error("Error fetching next receipt number:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
