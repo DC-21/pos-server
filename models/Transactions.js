@@ -8,7 +8,7 @@ const Transactions = db.define("Transactions", {
     primaryKey: true,
     allowNull: false,
   },
-  receiptno: {
+  rcptno: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
@@ -25,11 +25,11 @@ const Transactions = db.define("Transactions", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  opening_bal: {
+  opn_bal: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
-  closing_bal: {
+  clsn_bal: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
@@ -37,7 +37,7 @@ const Transactions = db.define("Transactions", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  amt_tendered: {
+  amt_tnd: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
@@ -45,15 +45,15 @@ const Transactions = db.define("Transactions", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  payment_type: {
+  pymt_type: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  description: {
+  desc: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  income_group_code: {
+  code: {
     type: Sequelize.STRING,
     allowNull: false,
   },

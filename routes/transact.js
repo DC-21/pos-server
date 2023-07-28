@@ -16,36 +16,36 @@ router.post('/transactions', async (req, res) => {
   try {
     // Extract the data from the request body
     const {
-      receiptno,
+      rcptno,
       date,
       name,
       customer_no,
-      opening_bal,
-      closing_bal,
+      opn_bal,
+      clsn_bal,
       amount,
-      amt_tendered,
+      amt_tnd,
       change,
-      payment_type,
-      description,
-      income_group_code,
+      pymt_type,
+      desc,
+      code,
     } = req.body;
 
     // Log the request body for debugging
     console.log("Request Body:", req.body);
 
     const newTransaction = await Transactions.create({
-      receiptno,
+      rcptno,
       date,
       name,
       customer_no,
-      opening_bal,
-      closing_bal,
+      opn_bal,
+      clsn_bal,
       amount,
-      amt_tendered,
+      amt_tnd,
       change,
-      payment_type,
-      description,
-      income_group_code,
+      pymt_type,
+      desc,
+      code,
     });
 
     // Log the newTransaction for debugging
