@@ -1,7 +1,7 @@
 const express = require('express');
 const sequelize = require('./utils/db');
 const useRouter = require('./routes/routes');
-const useTransact = require('./routes/transact');
+const useTransaction = require('./routes/transact');
 const useCompany = require('./routes/company-routes');
 const useIncome = require('./routes/income-groups');
 
@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Use routes
 app.use('/', useRouter);
-app.use('/', useTransact);
+app.use('/', useTransaction);
 app.use('/', useCompany);
 app.use('/',useIncome);
 

@@ -69,7 +69,7 @@ router.get('/income-groupcodes', async(req,res)=>{
     const codes = await IncomeGroups.findAll();
     return res.json({codes});
   }catch (error) {
-    console.error("Error fetching next receipt number:", error);
+    console.error("Error fetching income group codes:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 })

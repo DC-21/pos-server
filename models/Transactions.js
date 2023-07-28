@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/db");
 
-const Transaction = db.define("Transaction", {
+const Transactions = db.define("Transactions", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -13,23 +13,27 @@ const Transaction = db.define("Transaction", {
     allowNull: false,
     unique: true,
   },
-  transaction_date: {
+  date: {
     type: Sequelize.DATE,
     allowNull: false,
   },
-  accountname: {
+  name: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  accounttype: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  accountno: {
+  customer_no: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  amountpaid: {
+  opening_bal: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+  },
+  closing_bal: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+  },
+  amount: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
@@ -41,7 +45,7 @@ const Transaction = db.define("Transaction", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  incomegroupcode: {
+  income_group_code: {
     type: Sequelize.STRING,
     allowNull: false,
   },
@@ -49,4 +53,4 @@ const Transaction = db.define("Transaction", {
   timestamps: false,
 });
 
-module.exports = Transaction;
+module.exports = Transactions;
