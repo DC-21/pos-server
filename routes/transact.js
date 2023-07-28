@@ -1,10 +1,6 @@
 const Transactions = require("../models/Transactions");
 const express = require("express");
-const PDFDocument = require("pdfkit");
-const fs = require("fs");
 const router = express.Router();
-const path = require("path");
-const moment = require("moment-timezone");
 
 router.get('/transactions', async (req, res) => {
   try {
@@ -35,7 +31,7 @@ router.post('/transactions', async (req, res) => {
     // Log the request body for debugging
     console.log("Request Body:", req.body);
 
-    const Trans = await Transactions.create({
+    const newTransaction = await Transactions.create({
       receiptno,
       date,
       name,
@@ -49,9 +45,9 @@ router.post('/transactions', async (req, res) => {
     });
 
     // Log the newTransaction for debugging
-    console.log("New Transaction:", Trans);
+    console.log("New Transaction:", newTransaction);
 
-    return res.json({ Trans });
+    return res.json({ newTransaction });
   } catch (error) {
     console.log("error creating transactions:", error);
     return res.status(500).json({ error: "Internal server error" });
