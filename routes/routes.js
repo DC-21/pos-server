@@ -5,6 +5,8 @@ const axios = require("axios");
 // Global variable to store the formatted data
 let fetchedData = [];
 
+//routes to fetch data from the OData end point and post,update the local database.//
+
 router.get('/customers', async (req, res) => {
   try {
     const loginUrl = "http://23.254.128.117:7048/BusinessCentral140/ODataV4/Company('Mulonga%20Water%20Supply')/Customers";
@@ -86,7 +88,6 @@ router.put('/customers', async (req, res) => {
       });
 
       if (existingCustomer) {
-        // If the customer is found in the database, update their details
         await existingCustomer.update({
           name: name,
           address: address,
@@ -100,7 +101,6 @@ router.put('/customers', async (req, res) => {
       }
     }
 
-    // Clear the data in the global variable after updating all customers
     fetchedData = [];
 
     res.status(200).json({ message: 'All customers updated successfully.' });
@@ -109,6 +109,9 @@ router.put('/customers', async (req, res) => {
     res.status(500).json({ message: 'An error occurred while updating customer data.' });
   }
 });
+
+
+//routes to be used on the frontend//
 
 router.get("/customer-details", async (req, res) => {
   try {
