@@ -67,6 +67,49 @@ router.post('/customers', async (req, res) => {
   }
 });
 
+router.put('/customers', async (req, res) => {
+  try {
+    // Check if there is data in the fetchedData array
+    if (fetchedData.length === 0) {
+      return res.status(400).json({ message: 'No data to update. Please fetch data first.' });
+    }
+
+    // Loop through the fetchedData array and update each customer in the database
+    for (const customerData of fetchedData) {
+      const { customerNo, name, address, address2, phoneNo, balanceDueLCY } = customerData;
+
+      // Find the customer in the database based on the customerNo
+      const existingCustomer = await Customers.findOne({
+        where: {
+          customerNo: customerNo,
+        },
+      });
+
+      if (existingCustomer) {
+        // If the customer is found in the database, update their details
+        await existingCustomer.update({
+          name: name,
+          address: address,
+          address2: address2,
+          phoneNo: phoneNo,
+          balanceDueLCY: balanceDueLCY,
+        });
+        console.log('Customer', customerNo, 'updated successfully.');
+      } else {
+        console.log('Customer', customerNo, 'not found in the database. Skipping.');
+      }
+    }
+
+    // Clear the data in the global variable after updating all customers
+    fetchedData = [];
+
+    res.status(200).json({ message: 'All customers updated successfully.' });
+  } catch (error) {
+    console.error('Error updating customer data:', error);
+    res.status(500).json({ message: 'An error occurred while updating customer data.' });
+  }
+});
+
 router.get("/customer-details", async (req, res) => {
   try {
     const customerData = await Customers.findAll();
