@@ -110,7 +110,6 @@ router.put('/customers', async (req, res) => {
   }
 });
 
-
 //routes to be used on the frontend//
 
 router.get("/customer-details", async (req, res) => {
@@ -120,6 +119,39 @@ router.get("/customer-details", async (req, res) => {
   } catch (error) {
     console.error("Error fetching next receipt number:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PUT route to update the balanceDueLCY of a customer
+router.put('/customer-details/:customerNo', async (req, res) => {
+  try {
+    const customerNo = req.params.customerNo;
+    const { newBalanceDueLCY } = req.body;
+
+    // Check if the required parameters are provided
+    if (!customerNo || !newBalanceDueLCY) {
+      return res.status(400).json({ message: 'Please provide customerNo and newBalanceDueLCY.' });
+    }
+
+    // Find the customer by customerNo
+    const customer = await Customers.findOne({ where: { customerNo } });
+
+    // Check if the customer exists
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found.' });
+    }
+
+    // Update the balanceDueLCY field with the new value
+    customer.balanceDueLCY = newBalanceDueLCY;
+
+    // Save the updated customer to the database
+    await customer.save();
+
+    // Send a response with the updated customer
+    return res.status(200).json({ message: 'Customer balanceDueLCY updated successfully.', customer });
+  } catch (error) {
+    console.error('Error updating customer balanceDueLCY:', error);
+    return res.status(500).json({ message: 'An error occurred while updating customer balanceDueLCY.' });
   }
 });
 
