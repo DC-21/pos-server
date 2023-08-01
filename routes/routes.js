@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Customers = require('../models/Customer');
+const { ungzip } = require('pako');
 const axios = require("axios");
 
 // Global variable to store the formatted data
@@ -48,18 +49,12 @@ router.get('/customers', async (req, res) => {
 
 router.post('/customers', async (req, res) => {
   try {
-    // Use the data stored in the global variable to save to the database
     console.log('Data to be saved:', fetchedData);
-
-    // Check if there is data in the fetchedData array
     if (fetchedData.length === 0) {
       return res.status(400).json({ message: 'No data to save.' });
     }
 
-    // Save the fetchedData array to the database using Sequelize bulkCreate
     await Customers.bulkCreate(fetchedData);
-
-    // Clear the data in the global variable after saving to the database
     fetchedData = [];
 
     res.status(200).json({ message: 'Data saved successfully.' });
@@ -75,12 +70,8 @@ router.put('/customers', async (req, res) => {
     if (fetchedData.length === 0) {
       return res.status(400).json({ message: 'No data to update. Please fetch data first.' });
     }
-
-    // Loop through the fetchedData array and update each customer in the database
     for (const customerData of fetchedData) {
       const { customerNo, name, address, address2, phoneNo, balanceDueLCY } = customerData;
-
-      // Find the customer in the database based on the customerNo
       const existingCustomer = await Customers.findOne({
         where: {
           customerNo: customerNo,

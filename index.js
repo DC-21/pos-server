@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const sequelize = require('./utils/db');
 const useRouter = require('./routes/routes');
 const useTransaction = require('./routes/transact');
@@ -10,6 +11,8 @@ const app = express();
 
 // Configure bodyParser //
 app.use(cors());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

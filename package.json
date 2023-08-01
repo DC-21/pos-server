@@ -20,9 +20,11 @@
     "moment-timezone": "^0.5.43",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.4.5",
+    "pako": "^2.1.0",
     "pdfkit": "^0.13.0",
     "pg": "^8.11.1",
     "puppeteer": "^20.9.0",
-    "sequelize": "^6.32.1"
+    "sequelize": "^6.32.1",
+    "zlib": "^1.0.5"
   }
 }
