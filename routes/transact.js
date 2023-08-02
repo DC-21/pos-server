@@ -54,9 +54,18 @@ router.get("/generate-pdf", async (req, res) => {
     doc.pipe(res);
 
     // Add data from the most recent transaction to the PDF
-    doc.text(`Transaction ID: ${mostRecentTransaction.id}`);
+    doc.text(`Receipt No: ${mostRecentTransaction.rcptno}`);
     doc.text(`Amount: ${mostRecentTransaction.amount}`);
     doc.text(`Date: ${mostRecentTransaction.date}`);
+    doc.text(`Name: ${mostRecentTransaction.name}`);
+    doc.text(`Customer Number: ${mostRecentTransaction.customer_no}`);
+    doc.text(`Opening Balance: ${mostRecentTransaction.opn_bal}`);
+    doc.text(`Amount Paid: ${mostRecentTransaction.amount}`);
+    doc.text(`Amount Tendered: ${mostRecentTransaction.amt_tnd}`);
+    doc.text(`Change: ${mostRecentTransaction.change}`);
+    doc.text(`Closing Balance: ${mostRecentTransaction.clsn_bal}`);
+    doc.text(`Description: ${mostRecentTransaction.desc}`);
+    doc.text(`Income Group Code: ${mostRecentTransaction.code}`);
     // Add more transaction data as needed
 
     // Finalize the PDF and end the response
