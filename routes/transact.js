@@ -2,6 +2,7 @@ const Transactions = require("../models/Transactions");
 const express = require("express");
 const router = express.Router();
 const PDFDocument = require("pdfkit");
+const blobStream = require("blob-stream");
 
 // Function to generate the next receipt number
 const generateNextReceiptNumber = async () => {
@@ -45,6 +46,7 @@ router.get("/generate-pdf", async (req, res) => {
 
     // Create a new PDF document
     const doc = new PDFDocument();
+    const stream = doc.pipe(blobStream());
 
     // Set the appropriate response headers for the PDF
     res.setHeader("Content-Type", "application/pdf");
@@ -53,23 +55,34 @@ router.get("/generate-pdf", async (req, res) => {
     // Pipe the PDF document directly to the response
     doc.pipe(res);
 
-    // Add data from the most recent transaction to the PDF
-    doc.text(`Receipt No: ${mostRecentTransaction.rcptno}`);
-    doc.text(`Amount: ${mostRecentTransaction.amount}`);
-    doc.text(`Date: ${mostRecentTransaction.date}`);
-    doc.text(`Name: ${mostRecentTransaction.name}`);
-    doc.text(`Customer Number: ${mostRecentTransaction.customer_no}`);
-    doc.text(`Opening Balance: ${mostRecentTransaction.opn_bal}`);
-    doc.text(`Amount Paid: ${mostRecentTransaction.amount}`);
-    doc.text(`Amount Tendered: ${mostRecentTransaction.amt_tnd}`);
-    doc.text(`Change: ${mostRecentTransaction.change}`);
-    doc.text(`Closing Balance: ${mostRecentTransaction.clsn_bal}`);
-    doc.text(`Description: ${mostRecentTransaction.desc}`);
-    doc.text(`Income Group Code: ${mostRecentTransaction.code}`);
-    // Add more transaction data as needed
-
-    // Finalize the PDF and end the response
-    doc.end();
+    doc.font("Helvetica-Bold");
+    doc.fontSize(16);
+  
+    // Add styled data
+    doc.text("Receipt", { align: "center" });
+  
+    doc.font("Helvetica");
+    doc.fontSize(12);
+  
+    // Add data aligned on the left
+    const leftMargin = 50;
+    doc.text(`Receipt No: ${Transactions.rcptno}`, leftMargin);
+    doc.text(`Amount: ${Transactions.amount}`, leftMargin);
+    doc.text(`Date: ${Transactions.date}`, leftMargin);
+    doc.text(`Received: ${Transactions.name}`, leftMargin);
+    doc.text(`Customer Number: ${Transactions.customer_no}`, leftMargin);
+    doc.text(`Opening Balance: ${Transactions.opn_bal}`, leftMargin);
+    doc.text(`Amount Paid: ${Transactions.amount}`, leftMargin);
+    doc.text(`Amount Tendered: ${Transactions.amt_tnd}`, leftMargin);
+    doc.text(`Change: ${Transactions.change}`, leftMargin);
+  
+    // Add data aligned on the right
+    const rightMargin = 300;
+    doc.text(`Payment Type: ${Transactions.pymt_type}`, rightMargin);
+    doc.text(`Closing Balance: ${Transactions.clsn_bal}`, rightMargin);
+    doc.text(`Being: ${Transactions.desc}`, rightMargin);
+    doc.text(`Income Group Code: ${Transactions.code}`, rightMargin);
+  
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).json({ error: "Internal server error" });
