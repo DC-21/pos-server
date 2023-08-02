@@ -34,7 +34,6 @@ const generateNextReceiptNumber = async () => {
     throw error;
   }
 };
-
 const generatePDFReceipt = (transactionData) => {
   const doc = new PDFDocument();
   const stream = new Readable();
@@ -61,6 +60,12 @@ const generatePDFReceipt = (transactionData) => {
       .text(value, rightMargin, doc.y, { align: "right" });
   };
 
+  // Log when data is being pushed to the stream
+  stream.on("data", (chunk) => {
+    console.log("Pushing PDF data chunk...");
+    stream.push(chunk); // Add the data chunk to the stream
+  });
+
   doc.fontSize(20).text("Receipt", { align: "center" });
 
   // Add data to the left column
@@ -81,6 +86,12 @@ const generatePDFReceipt = (transactionData) => {
   addToRightColumn("Change:", transactionData.change);
   addToRightColumn("Description:", transactionData.desc);
   addToRightColumn("Income Group Code:", transactionData.code);
+
+  // Log when PDF generation is completed
+  doc.on("end", () => {
+    console.log("PDF generation completed.");
+    stream.push(null); // Signal the end of the stream
+  });
 
   doc.end();
 
@@ -146,6 +157,8 @@ router.post("/transactions", async (req, res) => {
 
     // Log the newTransaction for debugging
     console.log("New Transaction:", newTransaction);
+
+    console.log("Transaction successfully created!");
 
     // Generate the PDF receipt using the new transaction data
     const pdfStream = generatePDFReceipt(newTransaction.toJSON());
