@@ -75,10 +75,10 @@ router.get("/generate-pdf", async (req, res) => {
         col4: `${mostRecentTransaction.date}`,
       },
       {
-        col1: `Receipt No: RCT-000819`,
-        col2: `Amount Paid: k92`,
-        col3: `Received: John Doe`,
-        col4: `Amount: 92`,
+        col1: `Sum of: RCT-000819`,
+        col2: `${mostRecentTransaction.amount}`,
+        col3: `Amount:`,
+        col4: `${mostRecentTransaction.amount}`,
       },
       {
         col1: `Receipt No: RCT-000819`,
