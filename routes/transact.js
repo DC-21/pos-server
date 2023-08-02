@@ -83,7 +83,7 @@ router.get("/generate-pdf", async (req, res) => {
       `Received: ${mostRecentTransaction.name}`,
       `Customer Number: ${mostRecentTransaction.customer_no}`,
       `Opening Balance: ${mostRecentTransaction.opn_bal}`,
-      `Closing Balance: ${mostRecentTransaction.clsn_bal}`,
+      `Balance: Opening - ${mostRecentTransaction.opn_bal}, Closing - ${mostRecentTransaction.clsn_bal}`,
     ];
 
     const rightData = [
