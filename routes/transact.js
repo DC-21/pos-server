@@ -4,6 +4,8 @@ const router = express.Router();
 const PDFDocument = require("pdfkit");
 const PDFTable = require("voilab-pdf-table");
 const blobStream = require("blob-stream");
+const moment = require("moment-timezone");
+
 
 // Function to generate the next receipt number
 const generateNextReceiptNumber = async () => {
@@ -72,7 +74,7 @@ router.get("/generate-pdf", async (req, res) => {
         col1: `Received:`,
         col2: `${mostRecentTransaction.name}`,
         col3: `Date:`,
-        col4: `${mostRecentTransaction.date}`,
+        col4: moment(mostRecentTransaction.date).format("ddd MMM DD YYYY HH:mm:ss"),
       },
       {
         col1: `Sum of: RCT-000819`,
@@ -85,14 +87,14 @@ router.get("/generate-pdf", async (req, res) => {
         col2: `${mostRecentTransaction.desc}`,
         col3: `Payment Type:`,
         col4: `${mostRecentTransaction.pymt_type}`,
-      }
+      },
     ];
 
     // Create a PDFTable instance for the four columns
     const table = new PDFTable(doc, { bottomMargin: 30 });
 
     // Define column widths
-    const columnWidth = 140;
+    const columnWidth = 110;
 
     // Add columns to the table
     table
