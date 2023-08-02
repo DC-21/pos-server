@@ -69,12 +69,10 @@ router.get("/generate-pdf", async (req, res) => {
 
     const data = [
       {
-        col1: `Receipt No:`,
-        col2: `${mostRecentTransaction.rcptno}`,
-        col1: `Amount Paid:`,
-        col2: `k${mostRecentTransaction.amount}`,
-        col3: `Received: ${mostRecentTransaction.name}`,
-        col4: `Amount: ${mostRecentTransaction.amount}`,
+        col1: `Received:`,
+        col2: `${mostRecentTransaction.name}`,
+        col3: `Date:`,
+        col4: `${mostRecentTransaction.date}`,
       },
       {
         col1: `Receipt No: RCT-000819`,
@@ -117,10 +115,10 @@ router.get("/generate-pdf", async (req, res) => {
     // Add columns to the table
     table
       .addColumns([
-        { id: "col1", header: "header", width: columnWidth },
-        { id: "col2", header: "header", width: columnWidth },
-        { id: "col3", header: "header", width: columnWidth },
-        { id: "col4", header: "header", width: columnWidth },
+        { id: "col1", width: columnWidth },
+        { id: "col2", width: columnWidth },
+        { id: "col3", width: columnWidth },
+        { id: "col4", width: columnWidth },
       ])
       .onPageAdded(function (tb) {
         tb.columns.forEach((col) => (col.width = columnWidth));
