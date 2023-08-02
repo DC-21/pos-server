@@ -32,7 +32,6 @@ const generateNextReceiptNumber = async () => {
   }
 };
 
-
 router.get("/generate-pdf", async (req, res) => {
   try {
     // Retrieve the most recent transaction from the database
@@ -50,39 +49,67 @@ router.get("/generate-pdf", async (req, res) => {
 
     // Set the appropriate response headers for the PDF
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=transaction.pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=transaction.pdf"
+    );
 
     // Pipe the PDF document directly to the response
     doc.pipe(res);
 
     doc.font("Helvetica-Bold");
-    doc.fontSize(16);
-  
+    doc.fontSize(14);
+
     // Add styled data
     doc.text("Receipt", { align: "center" });
-  
+
     doc.font("Helvetica");
-    doc.fontSize(12);
-  
-    // Add data aligned on the left
-    const leftMargin = 50;
-    doc.text(`Receipt No: ${Transactions.rcptno}`, leftMargin);
-    doc.text(`Amount: ${Transactions.amount}`, leftMargin);
-    doc.text(`Date: ${Transactions.date}`, leftMargin);
-    doc.text(`Received: ${Transactions.name}`, leftMargin);
-    doc.text(`Customer Number: ${Transactions.customer_no}`, leftMargin);
-    doc.text(`Opening Balance: ${Transactions.opn_bal}`, leftMargin);
-    doc.text(`Amount Paid: ${Transactions.amount}`, leftMargin);
-    doc.text(`Amount Tendered: ${Transactions.amt_tnd}`, leftMargin);
-    doc.text(`Change: ${Transactions.change}`, leftMargin);
-  
-    // Add data aligned on the right
-    const rightMargin = 300;
-    doc.text(`Payment Type: ${Transactions.pymt_type}`, rightMargin);
-    doc.text(`Closing Balance: ${Transactions.clsn_bal}`, rightMargin);
-    doc.text(`Being: ${Transactions.desc}`, rightMargin);
-    doc.text(`Income Group Code: ${Transactions.code}`, rightMargin);
-  
+    doc.fontSize(10);
+
+    // Calculate the center of the page
+    const pageCenter = doc.page.width / 2;
+
+    // Calculate the width of the columns
+    const columnWidth = doc.page.width / 2;
+
+    // Define the vertical position for the lines
+    let yPosition = doc.y;
+
+    // Define the data for the left and right columns
+    const leftData = [
+      `Receipt No: ${mostRecentTransaction.rcptno}`,
+      `Amount: ${mostRecentTransaction.amount}`,
+      `Date: ${mostRecentTransaction.date}`,
+      `Received: ${mostRecentTransaction.name}`,
+      `Customer Number: ${mostRecentTransaction.customer_no}`,
+      `Opening Balance: ${mostRecentTransaction.opn_bal}`,
+      `Closing Balance: ${mostRecentTransaction.clsn_bal}`,
+    ];
+
+    const rightData = [
+      `Amount Paid: ${mostRecentTransaction.amount}`,
+      `Amount Tendered: ${mostRecentTransaction.amt_tnd}`,
+      `Change: ${mostRecentTransaction.change}`,
+      `Payment Type: ${mostRecentTransaction.pymt_type}`,
+      `Being: ${mostRecentTransaction.desc}`,
+      `Income Group Code: ${mostRecentTransaction.code}`,
+    ];
+
+    // Loop through the data and add text to the left and right columns
+    for (let i = 0; i < leftData.length; i++) {
+      doc.text(leftData[i], pageCenter - columnWidth, yPosition, {
+        align: "left",
+        width: columnWidth,
+      });
+      doc.text(rightData[i], pageCenter, yPosition, {
+        align: "right",
+        width: columnWidth,
+      });
+      yPosition += doc.currentLineHeight(true); // Move to the next line
+    }
+
+    // End the PDF document
+    doc.end();
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).json({ error: "Internal server error" });
