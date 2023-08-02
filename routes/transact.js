@@ -5,7 +5,7 @@ const PDFDocument = require("pdfkit");
 const PDFTable = require("voilab-pdf-table");
 const blobStream = require("blob-stream");
 const moment = require("moment-timezone");
-
+const numberToWords = require("number-to-words");
 
 // Function to generate the next receipt number
 const generateNextReceiptNumber = async () => {
@@ -69,16 +69,24 @@ router.get("/generate-pdf", async (req, res) => {
     doc.font("Helvetica");
     doc.fontSize(8);
 
+    function numberToWordsCustom(number) {
+      const words = numberToWords.toWords(number);
+      return words.charAt(0).toUpperCase() + words.slice(1).replace(/-/g, " ");
+    }
+
+    const amountInWords = numberToWordsCustom(mostRecentTransaction.amount);
     const data = [
       {
         col1: `Received:`,
         col2: `${mostRecentTransaction.name}`,
         col3: `Date:`,
-        col4: moment(mostRecentTransaction.date).format("ddd MMM DD YYYY HH:mm:ss"),
+        col4: moment(mostRecentTransaction.date).format(
+          "ddd MMM DD YYYY HH:mm:ss"
+        ),
       },
       {
-        col1: `Sum of: RCT-000819`,
-        col2: `${mostRecentTransaction.amount}`,
+        col1: `Sum of:`,
+        col2: `${amountInWords} Kwacha`,
         col3: `Amount:`,
         col4: `${mostRecentTransaction.amount}`,
       },
