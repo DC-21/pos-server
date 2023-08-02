@@ -26,6 +26,7 @@
     "pg": "^8.11.1",
     "puppeteer": "^20.9.0",
     "sequelize": "^6.32.1",
+    "voilab-pdf-table": "^0.5.1",
     "zlib": "^1.0.5"
   }
 }

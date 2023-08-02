@@ -2,6 +2,7 @@ const Transactions = require("../models/Transactions");
 const express = require("express");
 const router = express.Router();
 const PDFDocument = require("pdfkit");
+const PDFTable = require("voilab-pdf-table");
 const blobStream = require("blob-stream");
 
 // Function to generate the next receipt number
@@ -36,7 +37,7 @@ router.get("/generate-pdf", async (req, res) => {
   try {
     // Retrieve the most recent transaction from the database
     const mostRecentTransaction = await Transactions.findOne({
-      order: [["id", "DESC"]], // Order by id in descending order
+      order: [["id", "DESC"]],
     });
 
     if (!mostRecentTransaction) {
@@ -58,58 +59,84 @@ router.get("/generate-pdf", async (req, res) => {
     doc.pipe(res);
 
     doc.font("Helvetica-Bold");
-    doc.fontSize(14);
+    doc.fontSize(10);
 
     // Add styled data
     doc.text("Receipt", { align: "center" });
 
     doc.font("Helvetica");
-    doc.fontSize(10);
+    doc.fontSize(8);
 
-    // Calculate the width of the columns
-    const columnWidth = doc.page.width / 2;
-    const leftMargin = 50;
-    const rightMargin = doc.page.width / 2 + 50; // Adjust the right margin as needed
-
-    // Define the vertical position for the lines
-    let yPosition = doc.y;
-
-    // Define the data for the left and right columns
-    const leftData = [
-      `Receipt No: ${mostRecentTransaction.rcptno}`,
-      `Amount: ${mostRecentTransaction.amount}`,
-      `Date: ${mostRecentTransaction.date}`,
-      `Received: ${mostRecentTransaction.name}`,
-      `Customer Number: ${mostRecentTransaction.customer_no}`,
-      `Opening Balance: ${mostRecentTransaction.opn_bal}`,
-      `Closing Balance: ${mostRecentTransaction.clsn_bal}`,
+    const data = [
+      {
+        col1: `Receipt No:`,
+        col2: `${mostRecentTransaction.rcptno}`,
+        col1: `Amount Paid:`,
+        col2: `k${mostRecentTransaction.amount}`,
+        col3: `Received: ${mostRecentTransaction.name}`,
+        col4: `Amount: ${mostRecentTransaction.amount}`,
+      },
+      {
+        col1: `Receipt No: RCT-000819`,
+        col2: `Amount Paid: k92`,
+        col3: `Received: John Doe`,
+        col4: `Amount: 92`,
+      },
+      {
+        col1: `Receipt No: RCT-000819`,
+        col2: `Amount Paid: k92`,
+        col3: `Received: John Doe`,
+        col4: `Amount: 92`,
+      },
+      {
+        col1: `Receipt No: RCT-000819`,
+        col2: `Amount Paid: k92`,
+        col3: `Received: John Doe`,
+        col4: `Amount: 92`,
+      },
+      {
+        col1: `Receipt No: RCT-000819`,
+        col2: `Amount Paid: k92`,
+        col3: `Received: John Doe`,
+        col4: `Amount: 92`,
+      },
+      {
+        col1: `Receipt No: RCT-000819`,
+        col2: `Amount Paid: k92`,
+        col3: `Received: John Doe`,
+        col4: `Amount: 92`,
+      }
     ];
 
-    const rightData = [
-      `Amount Paid: ${mostRecentTransaction.amount}`,
-      `Amount Tendered: ${mostRecentTransaction.amt_tnd}`,
-      `Change: ${mostRecentTransaction.change}`,
-      `Payment Type: ${mostRecentTransaction.pymt_type}`,
-      `Being: ${mostRecentTransaction.desc}`,
-      `Income Group Code: ${mostRecentTransaction.code}`,
-    ];
+    // Create a PDFTable instance for the four columns
+    const table = new PDFTable(doc, { bottomMargin: 30 });
 
-    // Loop through the data and add text to both sides
-    for (let i = 0; i < Math.max(leftData.length, rightData.length); i++) {
-      if (i < leftData.length) {
-        doc.text(leftData[i], leftMargin, yPosition, {
-          align: "left",
-        });
-      }
+    // Define column widths
+    const columnWidth = 140;
 
-      if (i < rightData.length) {
-        doc.text(rightData[i], rightMargin, yPosition, {
-          align: "left",
-        });
-      }
+    // Add columns to the table
+    table
+      .addColumns([
+        { id: "col1", header: "header", width: columnWidth },
+        { id: "col2", header: "header", width: columnWidth },
+        { id: "col3", header: "header", width: columnWidth },
+        { id: "col4", header: "header", width: columnWidth },
+      ])
+      .onPageAdded(function (tb) {
+        tb.columns.forEach((col) => (col.width = columnWidth));
+      });
 
-      yPosition += doc.currentLineHeight(true); // Move to the next line
-    }
+    // Add rows to the table
+    data.forEach((row) => {
+      table.addBody([
+        {
+          col1: row.col1,
+          col2: row.col2,
+          col3: row.col3,
+          col4: row.col4,
+        },
+      ]);
+    });
 
     // End the PDF document
     doc.end();
@@ -118,7 +145,6 @@ router.get("/generate-pdf", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 router.get("/receiptno", async (req, res) => {
   try {
