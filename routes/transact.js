@@ -66,11 +66,10 @@ router.get("/generate-pdf", async (req, res) => {
     doc.font("Helvetica");
     doc.fontSize(10);
 
-    // Calculate the center of the page
-    const pageCenter = doc.page.width / 3;
-
     // Calculate the width of the columns
-    const columnWidth = doc.page.width / 3;
+    const columnWidth = doc.page.width / 2;
+    const leftMargin = 50;
+    const rightMargin = doc.page.width / 2 + 50; // Adjust the right margin as needed
 
     // Define the vertical position for the lines
     let yPosition = doc.y;
@@ -83,7 +82,7 @@ router.get("/generate-pdf", async (req, res) => {
       `Received: ${mostRecentTransaction.name}`,
       `Customer Number: ${mostRecentTransaction.customer_no}`,
       `Opening Balance: ${mostRecentTransaction.opn_bal}`,
-      `Opening balance - ${mostRecentTransaction.opn_bal}, Closing balance- ${mostRecentTransaction.clsn_bal}`,
+      `Closing Balance: ${mostRecentTransaction.clsn_bal}`,
     ];
 
     const rightData = [
@@ -95,25 +94,22 @@ router.get("/generate-pdf", async (req, res) => {
       `Income Group Code: ${mostRecentTransaction.code}`,
     ];
 
-    const leftMargin = 50;
-const rightMargin = doc.page.width - 150; // Adjust the right margin as needed
+    // Loop through the data and add text to both sides
+    for (let i = 0; i < Math.max(leftData.length, rightData.length); i++) {
+      if (i < leftData.length) {
+        doc.text(leftData[i], leftMargin, yPosition, {
+          align: "left",
+        });
+      }
 
-// Loop through the data and add text to both sides
-for (let i = 0; i < Math.max(leftData.length, rightData.length); i++) {
-  if (i < leftData.length) {
-    doc.text(leftData[i], leftMargin, yPosition, {
-      align: "left",
-    });
-  }
+      if (i < rightData.length) {
+        doc.text(rightData[i], rightMargin, yPosition, {
+          align: "left",
+        });
+      }
 
-  if (i < rightData.length) {
-    doc.text(rightData[i], rightMargin, yPosition, {
-      align: "right",
-    });
-  }
-
-  yPosition += doc.currentLineHeight(true); // Move to the next line
-}
+      yPosition += doc.currentLineHeight(true); // Move to the next line
+    }
 
     // End the PDF document
     doc.end();
@@ -122,6 +118,7 @@ for (let i = 0; i < Math.max(leftData.length, rightData.length); i++) {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 router.get("/receiptno", async (req, res) => {
   try {
