@@ -2,10 +2,6 @@ const Transactions = require("../models/Transactions");
 const express = require("express");
 const router = express.Router();
 const PDFDocument = require("pdfkit");
-const path = require("path");
-const fs = require("fs");
-const moment = require("moment-timezone");
-const { Readable } = require("stream");
 
 // Function to generate the next receipt number
 const generateNextReceiptNumber = async () => {
@@ -34,69 +30,42 @@ const generateNextReceiptNumber = async () => {
     throw error;
   }
 };
-const generatePDFReceipt = (transactionData) => {
-  const doc = new PDFDocument();
-  const stream = new Readable();
 
-  stream._read = () => {};
 
-  // Define the left and right margin for the two columns
-  const leftMargin = 50;
-  const rightMargin = 300;
+router.get("/generate-pdf", async (req, res) => {
+  try {
+    // Retrieve the most recent transaction from the database
+    const mostRecentTransaction = await Transactions.findOne({
+      order: [["id", "DESC"]], // Order by id in descending order
+    });
 
-  // Function to add data to the left column
-  const addToLeftColumn = (label, value) => {
-    doc
-      .fontSize(12)
-      .text(label, leftMargin)
-      .text(value, leftMargin, doc.y, { align: "right" });
-  };
+    if (!mostRecentTransaction) {
+      return res.status(404).json({ error: "No transactions found" });
+    }
 
-  // Function to add data to the right column
-  const addToRightColumn = (label, value) => {
-    doc
-      .fontSize(12)
-      .text(label, rightMargin)
-      .text(value, rightMargin, doc.y, { align: "right" });
-  };
+    // Create a new PDF document
+    const doc = new PDFDocument();
 
-  // Log when data is being pushed to the stream
-  stream.on("data", (chunk) => {
-    console.log("Pushing PDF data chunk...");
-    stream.push(chunk); // Add the data chunk to the stream
-  });
+    // Set the appropriate response headers for the PDF
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=transaction.pdf");
 
-  doc.fontSize(20).text("Receipt", { align: "center" });
+    // Pipe the PDF document directly to the response
+    doc.pipe(res);
 
-  // Add data to the left column
-  addToLeftColumn("Receipt No:", transactionData.rcptno);
-  addToLeftColumn("Date:", transactionData.date);
-  addToLeftColumn("Name:", transactionData.name);
-  addToLeftColumn("Customer No:", transactionData.customer_no);
-  addToLeftColumn("Opening Balance:", transactionData.opn_bal);
-  addToLeftColumn("Amount:", transactionData.amount);
-  addToLeftColumn("Amount Tendered:", transactionData.amt_tnd);
-  addToLeftColumn("Payment Type:", transactionData.pymt_type);
+    // Add data from the most recent transaction to the PDF
+    doc.text(`Transaction ID: ${mostRecentTransaction.id}`);
+    doc.text(`Amount: ${mostRecentTransaction.amount}`);
+    doc.text(`Date: ${mostRecentTransaction.date}`);
+    // Add more transaction data as needed
 
-  // Move to the right column
-  doc.moveUp(doc.y - doc.page.margins.top).moveTo(rightMargin, doc.y);
-
-  // Add data to the right column
-  addToRightColumn("Closing Balance:", transactionData.clsn_bal);
-  addToRightColumn("Change:", transactionData.change);
-  addToRightColumn("Description:", transactionData.desc);
-  addToRightColumn("Income Group Code:", transactionData.code);
-
-  // Log when PDF generation is completed
-  doc.on("end", () => {
-    console.log("PDF generation completed.");
-    stream.push(null); // Signal the end of the stream
-  });
-
-  doc.end();
-
-  return stream;
-};
+    // Finalize the PDF and end the response
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 router.get("/receiptno", async (req, res) => {
   try {
@@ -158,30 +127,12 @@ router.post("/transactions", async (req, res) => {
     // Log the newTransaction for debugging
     console.log("New Transaction:", newTransaction);
 
+    // Log a success message after creating the transaction
     console.log("Transaction successfully created!");
 
-    // Generate the PDF receipt using the new transaction data
-    const pdfStream = generatePDFReceipt(newTransaction.toJSON());
-
-    // Convert the PDF stream to a buffer
-    let pdfBuffer = Buffer.from([]);
-    pdfStream.on("data", (chunk) => {
-      pdfBuffer = Buffer.concat([pdfBuffer, chunk]);
-    });
-
-    pdfStream.on("end", () => {
-      // Set the appropriate headers for the PDF response
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=${newTransaction.rcptno}.pdf`
-      );
-
-      // Send the PDF buffer in the response
-      res.send(pdfBuffer);
-    });
+    return res.json({ message: "Transaction successfully created!" });
   } catch (error) {
-    console.log("error creating transactions:", error);
+    console.log("Error creating transactions:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
