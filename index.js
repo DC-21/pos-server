@@ -5,6 +5,7 @@ const useRouter = require('./routes/routes');
 const useTransaction = require('./routes/transact');
 const useCompany = require('./routes/company-routes');
 const useIncome = require('./routes/income-groups');
+const useGLA = require('./routes/GLAroute');
 
 const cors = require("cors");
 const app = express();
@@ -21,7 +22,7 @@ app.use('/', useRouter);
 app.use('/', useTransaction);
 app.use('/', useCompany);
 app.use('/',useIncome);
-
+app.use('/',useGLA);
 
 // Error handling middleware to protect server from crashing //
 app.use((err, req, res, next) => {

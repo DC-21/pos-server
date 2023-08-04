@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const Customers = require('../models/Customer');
-const { ungzip } = require('pako');
 const axios = require("axios");
 
 // Global variable to store the formatted data

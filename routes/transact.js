@@ -34,10 +34,8 @@ const generateNextReceiptNumber = async () => {
     throw error;
   }
 };
-
 router.get("/generate-pdf", async (req, res) => {
   try {
-    // Retrieve the most recent transaction from the database
     const mostRecentTransaction = await Transactions.findOne({
       order: [["id", "DESC"]],
     });
@@ -46,28 +44,22 @@ router.get("/generate-pdf", async (req, res) => {
       return res.status(404).json({ error: "No transactions found" });
     }
 
-    // Create a new PDF document
     const doc = new PDFDocument();
     const stream = doc.pipe(blobStream());
 
-    // Set the appropriate response headers for the PDF
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
       "attachment; filename=transaction.pdf"
     );
 
-    // Pipe the PDF document directly to the response
-    doc.pipe(res);
-
     doc.font("Helvetica-Bold");
     doc.fontSize(10);
 
-    // Add styled data
     doc.text("Receipt", { align: "center" });
 
     doc.font("Helvetica");
-    doc.fontSize(8);
+    doc.fontSize(9);
 
     function numberToWordsCustom(number) {
       const words = numberToWords.toWords(number);
@@ -96,15 +88,23 @@ router.get("/generate-pdf", async (req, res) => {
         col3: `Payment Type:`,
         col4: `${mostRecentTransaction.pymt_type}`,
       },
+      {
+        col1: `Being:`,
+        col2: `${mostRecentTransaction.desc}`,
+        col3: `Payment Type:`,
+        col4: `${mostRecentTransaction.pymt_type}`,
+      },
+      {
+        col1: `Being:`,
+        col2: `${mostRecentTransaction.desc}`,
+        col3: `Payment Type:`,
+        col4: `${mostRecentTransaction.pymt_type}`,
+      },
     ];
 
-    // Create a PDFTable instance for the four columns
     const table = new PDFTable(doc, { bottomMargin: 30 });
-
-    // Define column widths
     const columnWidth = 110;
 
-    // Add columns to the table
     table
       .addColumns([
         { id: "col1", width: columnWidth },
@@ -116,7 +116,7 @@ router.get("/generate-pdf", async (req, res) => {
         tb.columns.forEach((col) => (col.width = columnWidth));
       });
 
-    // Add rows to the table
+    doc.lineGap(8);
     data.forEach((row) => {
       table.addBody([
         {
@@ -127,7 +127,6 @@ router.get("/generate-pdf", async (req, res) => {
         },
       ]);
     });
-
     // End the PDF document
     doc.end();
   } catch (error) {
@@ -135,6 +134,7 @@ router.get("/generate-pdf", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 router.get("/receiptno", async (req, res) => {
   try {
