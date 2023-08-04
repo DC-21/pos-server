@@ -63,4 +63,38 @@ router.post('/gl-accounts', async (req, res) => {
   }
 });
 
+router.put('/gl-accounts', async (req, res) => {
+  try {
+    // Check if there is data in the fetchedData array
+    if (fetchedData.length === 0) {
+      return res.status(400).json({ message: 'No data to update. Please fetch data first.' });
+    }
+    for (const glAccount of fetchedData) {
+      const { code, name} = glAccount;
+      const existingGlAccount = await GLA.findOne({
+        where: {
+          code: code,
+        },
+      });
+
+      if (existingGlAccount) {
+        await existingGlAccount.update({
+          code: code,
+          name: name,
+        });
+        console.log('GL accounts', code, 'updated successfully.');
+      } else {
+        console.log('GL accounts', code, 'not found in the database. Skipping.');
+      }
+    }
+
+    fetchedData = [];
+
+    res.status(200).json({ message: 'All G/L accounts updated successfully.' });
+  } catch (error) {
+    console.error('Error updating G/L accounts data:', error);
+    res.status(500).json({ message: 'An error occurred while updating G/L accounts data.' });
+  }
+});
+
 module.exports = router;
