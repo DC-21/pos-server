@@ -135,7 +135,6 @@ router.get("/generate-pdf", async (req, res) => {
   }
 });
 
-
 router.get("/receiptno", async (req, res) => {
   try {
     const nextReceiptNumber = await generateNextReceiptNumber();
@@ -203,6 +202,26 @@ router.post("/transactions", async (req, res) => {
   } catch (error) {
     console.log("Error creating transactions:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/transactions/:id", async (req, res) => {
+  const transactionId = req.params.id;
+
+  try {
+    const [numUpdatedRows] = await Transactions.update(
+      { closed: true, Post: true },
+      { where: { id: transactionId } } // Add the where clause here
+    );
+
+    if (numUpdatedRows === 0) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    return res.json({ message: 'Closed status updated successfully' });
+  } catch (error) {
+    console.error('Error updating closed status:', error);
+    return res.status(500).json({ message: 'Error updating closed status' });
   }
 });
 
