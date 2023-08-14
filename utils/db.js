@@ -1,4 +1,4 @@
-const sequelize = new Sequelize('businessDB', 'Cholah', 'Cholah@2104', {
+const sequelize = new sequelize('businessDB', 'Cholah', 'Cholah@2104', {
   host: 'localhost',
   dialect: 'mysql',
 });
