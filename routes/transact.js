@@ -34,106 +34,6 @@ const generateNextReceiptNumber = async () => {
     throw error;
   }
 };
-router.get("/generate-pdf", async (req, res) => {
-  try {
-    const mostRecentTransaction = await Transactions.findOne({
-      order: [["id", "DESC"]],
-    });
-
-    if (!mostRecentTransaction) {
-      return res.status(404).json({ error: "No transactions found" });
-    }
-
-    const doc = new PDFDocument();
-    const stream = doc.pipe(blobStream());
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=transaction.pdf"
-    );
-
-    doc.font("Helvetica-Bold");
-    doc.fontSize(10);
-
-    doc.text("Receipt", { align: "center" });
-
-    doc.font("Helvetica");
-    doc.fontSize(9);
-
-    function numberToWordsCustom(number) {
-      const words = numberToWords.toWords(number);
-      return words.charAt(0).toUpperCase() + words.slice(1).replace(/-/g, " ");
-    }
-
-    const amountInWords = numberToWordsCustom(mostRecentTransaction.amount);
-    const data = [
-      {
-        col1: `Received:`,
-        col2: `${mostRecentTransaction.name}`,
-        col3: `Date:`,
-        col4: moment(mostRecentTransaction.date).format(
-          "ddd MMM DD YYYY HH:mm:ss"
-        ),
-      },
-      {
-        col1: `Sum of:`,
-        col2: `${amountInWords} Kwacha`,
-        col3: `Amount:`,
-        col4: `${mostRecentTransaction.amount}`,
-      },
-      {
-        col1: `Being:`,
-        col2: `${mostRecentTransaction.desc}`,
-        col3: `Payment Type:`,
-        col4: `${mostRecentTransaction.pymt_type}`,
-      },
-      {
-        col1: `Being:`,
-        col2: `${mostRecentTransaction.desc}`,
-        col3: `Payment Type:`,
-        col4: `${mostRecentTransaction.pymt_type}`,
-      },
-      {
-        col1: `Being:`,
-        col2: `${mostRecentTransaction.desc}`,
-        col3: `Payment Type:`,
-        col4: `${mostRecentTransaction.pymt_type}`,
-      },
-    ];
-
-    const table = new PDFTable(doc, { bottomMargin: 30 });
-    const columnWidth = 110;
-
-    table
-      .addColumns([
-        { id: "col1", width: columnWidth },
-        { id: "col2", width: columnWidth },
-        { id: "col3", width: columnWidth },
-        { id: "col4", width: columnWidth },
-      ])
-      .onPageAdded(function (tb) {
-        tb.columns.forEach((col) => (col.width = columnWidth));
-      });
-
-    doc.lineGap(8);
-    data.forEach((row) => {
-      table.addBody([
-        {
-          col1: row.col1,
-          col2: row.col2,
-          col3: row.col3,
-          col4: row.col4,
-        },
-      ]);
-    });
-    // End the PDF document
-    doc.end();
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 router.get("/receiptno", async (req, res) => {
   try {
@@ -176,7 +76,6 @@ router.post("/transactions", async (req, res) => {
     // Log the request body for debugging
     console.log("Request Body:", req.body);
 
-    // Create the new transaction in the database
     const newTransaction = await Transactions.create({
       rcptno,
       date,
